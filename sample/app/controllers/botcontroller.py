@@ -14,7 +14,8 @@ class BotController:
             if vi1!="map":
                 route = request.bot.def_route[:]
                 route.append(vi1)
-                message.add_markup([{"text":item1["action"], "command":'.'.join(route)}])
+                mklist=[]
+                mklist.append([{"text":item1["action"], "command":'.'.join(route)}])
                 if "variants" in item1:
                     items_list = []
                     for vi2,item2 in item1["variants"].items():
@@ -22,8 +23,10 @@ class BotController:
                             route2 = route[:]
                             route2.append(vi2)
                             items_list.append({"text":item2["action"], "command":'.'.join(route2)})
-                    message.add_markup(items_list)
-                message.send(request.chatid, text=">")    
+                    if len(items_list)>0:        
+                        mklist.add(items_list)
+                markup = message.get_blank_markup_dict(mklist=mklist)    
+                message.send(request.chatid, text=">", reply_markup=markup)    
 
     def get_ip(self, request:Request):
         logging.info(str(request.user.id)+": BotController:get_ip")  
@@ -44,8 +47,9 @@ class BotController:
             message.send(request.chatid, text=_("Ваш идентификатор: ") + str(request.user.id))                
         else:    
             logging.info("command: "+request.route_str+":registration")  
-            message.add_markup([{"text":_("Зарегистрироваться"), "command":request.route_str+":registration"}])   
-            message.send(request.chatid, text=_("Авторизуйтесь или зарегистрируйтесь для начала работы с системой")) 
+            mklist = [{"text":_("Зарегистрироваться"), "command":request.route_str+":registration"}]  
+            markup = message.get_blank_markup_dict(mklist=mklist)        
+            message.send(request.chatid, text=_("Авторизуйтесь или зарегистрируйтесь для начала работы с системой"), reply_markup=markup) 
 
     def authorization(self, request:Request):
         logging.info(str(request.user.id)+": BotController:authorization")  

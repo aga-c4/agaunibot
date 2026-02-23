@@ -3,38 +3,33 @@ from telebot import types # для указание типов
 from telebot.util import quick_markup
 import logging
 from time import sleep
-import json
 
+from .sysbf import SysBf
 from .singleton import singleton
 
 @singleton
 class Message():
     status = True
-    bot = None
-    parse_mode = 'HTML'
-    markup = None
-    markup_type = None
+    driver = None
+    def_markup_row_width = 3
 
-    def __init__(self, telegram_conf:dict):
-        self.status = True
-        telegram_conf = telegram_conf
-        
-        if self.status:
-            telegram_api_token = telegram_conf.get('api_token', None)
-            if telegram_api_token is None:
-                self.status = False
-            
-        if self.status:
-            try:    
-                self.bot = telebot.TeleBot(telegram_api_token)
-            except:
-                logging.warning("TeleBot init problems!")
-                self.status = False
+    @property
+    def status(self):
+        if self.import_driver is None or self.driver_class is None:
+            return False
+        return self.driver.get_status()
 
-    def get_status(self):
-        return self.status
+    def __init__(self, conf:dict):
+        self.driver_alias = conf["messages"].get('driver_alias', None).lower()
+        self.import_driver = conf["messages"].get('import_driver', None).lower()
+        self.driver_class = conf["messages"].get('driver_class', None)
+        self.def_markup_row_width = conf["messages"].get('def_markup_row_width', 3)
+        if not self.import_driver is None and not self.driver_class is None:
+            self.driver = SysBf.class_factory(self.import_driver, self.driver_class, conf.get(self.driver_alias, {}))
+            logging.info("Use bot driver: {0}".format(self.driver_class)) 
 
-    def send(self, channel:str, *, text:str, img_buf=None) -> int:
+
+    def send(self, channel:str, text:str, img_buf=None, reply_markup=None) -> int:
         if not self.status:
             return 0  
 
@@ -42,43 +37,40 @@ class Message():
         logging.info(f"channel={channel}: Try to send: {text}")   
         try:
             if text!='':
-                self.bot.send_message(channel, text, disable_web_page_preview=True, parse_mode=self.parse_mode, reply_markup=self.markup)
+                self.driver.send_message(channel, text, reply_markup=reply_markup) 
             res += 1
             if not img_buf is None:
                 sleep(0.2)
-                self.bot.send_photo(channel, img_buf)
-        except:
-            logging.warning(f"channel=[{channel}]: Messages send error: {text}")
+                self.driver.send_photo(channel, img_buf)
+        except Exception:
+            logging.exception(f"channel=[{channel}]: Messages send error: {text}")
 
-        self.clean_markup()
         return res
     
-    def send_photo(self, channel:str, *, img_buf=None) -> int:
+    def send_photo(self, channel:str, img_buf=None, reply_markup=None) -> int:
         if not self.status:
             return 0  
-
+            
         res = None
         logging.info(f"channel={channel}: Try to send photo")   
         try:
-            res = self.bot.send_photo(channel, img_buf, reply_markup=self.markup)
-        except:
-            logging.warning(f"channel=[{channel}]: Photo send error")
+            res = self.driver.send_photo(channel, img_buf=img_buf, reply_markup=reply_markup)
+        except Exception:
+            logging.exception(f"channel=[{channel}]: Photo send error")
 
-        self.clean_markup()
         return res
     
-    def send_document(self, channel:str, *, img_buf=None) -> int:
+    def send_document(self, channel:str, img_buf=None, reply_markup=None) -> int:
         if not self.status:
             return 0  
 
         res = None
         logging.info(f"channel={channel}: Try to send document")   
         try:
-            res = self.bot.send_document(channel, document=img_buf, reply_markup=self.markup)
-        except:
-            logging.warning(f"channel=[{channel}]: Document send error")
+            res = self.driver.send_document(channel, document=img_buf, reply_markup=reply_markup)
+        except Exception:
+            logging.exception(f"channel=[{channel}]: Document send error")
 
-        self.clean_markup()
         return res
     
     def download_file(self, message, filename:str):
@@ -87,13 +79,9 @@ class Message():
             return None
         else:
             try:
-                file_info = self.bot.get_file(message.document.file_id)
-                downloaded_file = self.bot.download_file(file_info.file_path)
-                with open(filename, 'wb') as new_file:
-                    new_file.write(downloaded_file)
-                return filename    
+                return self.driver.download_file(message.document.file_id, filename) 
             except:
-                logging.warning(f"channel=[{channel}]: Error: Message:download_file")  
+                logging.exception(f"channel=[{channel}]: Error: Message:download_file")  
                 return None     
     
 
@@ -106,23 +94,23 @@ class Message():
             if new_text!='':
                 use_markup = None
                 if not reply_markup is None and type(reply_markup) is dict and "inline_keyboard" in reply_markup:
-                    markup = types.InlineKeyboardMarkup(row_width=3)
+                    found_markup = []
                     for mkitemlist in reply_markup["inline_keyboard"]:
                         add_list = []
                         for mkitem in mkitemlist:
-                            add_list.append(types.InlineKeyboardButton(mkitem["text"], callback_data=mkitem["callback_data"]))
-                        if len(add_list)>0:
-                            markup.add(*add_list)  
-                            use_markup = markup     
+                            add_list.append({"text": mkitem["text"], "callback_data": mkitem["callback_data"]})
+                        if len(add_list)>0:  
+                            found_markup.add(add_list)    
+                    use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")            
 
-                self.bot.edit_message_text(chat_id=channel, 
+                self.bot.edit_message_text(channel=channel, 
                                            message_id=message_id, 
-                                           text=new_text, 
+                                           new_text=new_text, 
                                            reply_markup=use_markup)
-                self.clean_markup()
+
                 return 1
-        except:
-            logging.warning(f"channel=[{channel}]: message_id={message_id}: Messages edit error: {new_text}")
+        except Exception:
+            logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages edit error: {new_text}")
             return 0
         
     def edit_message_media(self, channel:str, message_id:str, *, img_buf=None, reply_markup=None) -> int:
@@ -134,25 +122,24 @@ class Message():
             if not img_buf is None:
                 use_markup = None
                 if not reply_markup is None and type(reply_markup) is dict and "inline_keyboard" in reply_markup:
-                    markup = types.InlineKeyboardMarkup(row_width=3)
+                    found_markup = []
                     for mkitemlist in reply_markup["inline_keyboard"]:
                         add_list = []
                         for mkitem in mkitemlist:
-                            add_list.append(types.InlineKeyboardButton(mkitem["text"], callback_data=mkitem["callback_data"]))
-                        if len(add_list)>0:
-                            markup.add(*add_list)  
-                            use_markup = markup     
+                            add_list.append({"text": mkitem["text"], "callback_data": mkitem["callback_data"]})
+                        if len(add_list)>0:  
+                            found_markup.add(add_list)    
+                    use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")             
 
-                photo = types.InputMediaPhoto(img_buf)
-                self.bot.edit_message_media(chat_id=channel, 
+                self.bot.edit_message_media(channel=channel, 
                                            message_id=message_id, 
-                                           media=photo, 
+                                           img_buf=img_buf,
                                            reply_markup=use_markup)
-                self.clean_markup()
+
                 return 1
-        except:
+        except Exception:
             err_text = "" # TODO - вставить сюда сообщение об ошибке
-            logging.warning(f"channel=[{channel}]: message_id={message_id}: Messages edit error: {err_text}")
+            logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages edit error: {err_text}")
             return 0    
         
 
@@ -162,54 +149,33 @@ class Message():
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to delete")   
         try:
-                self.bot.delete_message(chat_id=channel, message_id=message_id)
-                self.clean_markup()
+                self.bot.delete_message(channel=channel, message_id=message_id)
                 return 1
-        except:
-            logging.warning(f"channel=[{channel}]: message_id={message_id}: Messages delete error")
+        except Exception:
+            logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages delete error")
             return 0    
-        
+    
 
-    def add_markup(self, mklist=[], mktype:str="InlineKeyboardMarkup"):
-        if not type(mklist)==list:
-            return False
-        if len(mklist)==0:
-            return False
-        if mktype=="InlineKeyboardMarkup" and (self.markup_type is None or self.markup_type==mktype):
-            if self.markup is None:    
-                self.markup = types.InlineKeyboardMarkup(row_width=3)
-                self.markup_type=mktype
-            add_list = []
-            for mkitem in mklist:
-                if type(mkitem) is dict:
-                    add_list.append(types.InlineKeyboardButton(mkitem["text"], callback_data=mkitem["command"]))
-                else:
-                    add_list.append(types.InlineKeyboardButton(mkitem, callback_data=mkitem))    
-            self.markup.add(*add_list)    
-        elif mktype=="ReplyKeyboardMarkup" and (self.markup_type is None or self.markup_type==mktype):    
-            if self.markup is None:    
-                self.markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-                self.markup_type=mktype
-            self.markup.add(*mklist)    
-        return True
-
-
-    def clean_markup(self):
-        self.markup = None
-        self.markup_type = None
+    def get_blank_markup_dict(self, *, mktype:str="InlineKeyboardMarkup", mklist:list=[], row_width:int=0):
+        if row_width==0:
+            row_width = self.def_markup_row_width
+        if mktype=="ReplyKeyboardMarku":
+            mktype_str = "ReplyKeyboardMarku"
+        else:
+            mktype_str = "InlineKeyboardMarkup"  
+        if len(mklist)>0:      
+            return {
+                "type": mktype_str,
+                "row_width": row_width,
+                "items":[]
+            } 
+        else:
+            None       
 
 
     def get_user_info(self, user_id):
         try:
-            user = self.bot.get_chat(user_id)  # Получаем информацию о пользователе
-            user_info = {
-                'first_name': user.first_name
-            }
-            if type(user.username) is str:
-                user_info["username"] = user.username
-            else:
-                user_info["username"] = ""    
-            return user_info
+            return self.driver.get_user_info(user_id)
         except Exception as e:
             logging.warning(f"user_id={user_id}: get_chat error: {e}")
             return None

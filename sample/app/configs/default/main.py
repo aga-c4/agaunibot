@@ -22,7 +22,9 @@ class main:
             # Список доступных языков
             "available_langs": ["ru", "en"],
             # Дефолтовый язык
-            "default_lang": "ru"
+            "default_lang": "ru",
+            # Драйвер месседжера
+            "message_driver": "agaunibot.telegram"
         },
         "bot": {
             # Название бота, будет присутствовать в сообщениях
@@ -62,8 +64,19 @@ class main:
             # Контроллер анализатора текстов бота, если не задан, то не вызывается
             "analyse_text_controller": "TextAnalyseController"
         },
+        # Параметры модуля работы с мессенджерами
+        "messages": {
+            # Алиас используемого мессенджера, по нему подтянется конфиг
+            "driver_alias": "telegram",
+            # Строка импорат драйвера
+            "import_driver": "agaunibot.telegram", # Если драйвер свой, то можно указать так - "app.models.telegram"
+            # Класс, драйвера
+            "driver_class": "Telegram",
+            # Количество кнопок на строке
+            "def_markup_row_width": 3
+        },
         # Параметры для публикации сообщений в канал рассылки в Телеграм
-        "telegram": {
+        "telegram": { 
             "api_token": "",
             "channels": {
                 "domchat": "-000000000000"

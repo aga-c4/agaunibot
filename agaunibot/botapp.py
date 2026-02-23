@@ -3,6 +3,7 @@ import argparse
 import time
 from datetime import datetime
 import logging
+import telebot
 
 from .config import Config
 from agaunibot.lang import Lang
@@ -63,9 +64,10 @@ Examples:
         if type(self.default_lang) is str and self.default_lang in Lang.available_langs:
             Lang.install_lang(self.default_lang)
         self.bot = MyBot(self.config)
-        self.message = Message(config["telegram"])
-        if self.message.get_status():
-            self.message.send(config["telegram"]["channels"]["domchat"], text=f"Bot started!") 
+        self.message = Message(config)
+        # TODO - Продумать уведомления
+        # if self.message.status:
+        #     self.message.send(config["telegram"]["channels"]["domchat"], text=f"Bot started!") 
     
     def set(self, **kwargs):
         """set(bot=bot, config=config, message=message...)"""
@@ -214,30 +216,36 @@ Examples:
             if len(spl)==1:
                 variants = node.get_variants(request)
                 request.set(node_variants=variants)
-                self.message.add_markup(variants["variant_list"], "ReplyKeyboardMarkup")  
+                mklist = []
+                if len(variants["variant_list"])>0:
+                    mklist.append(variants["variant_list"])  
                 if str(route)!=str(def_route) and not node.get("fast_back", False):
                     markup_variants = [self.bot.main_variant, variants["back_variant"]]
                     if variants["forvard_variant"]:
                         markup_variants.append(variants["forvard_variant"])
-                    self.message.add_markup(markup_variants, "ReplyKeyboardMarkup")
+                    mklist.append(markup_variants)
                 mess_txt = node.get("message", "")
-                self.message.send(in_message.from_user.id, text=mess_txt)    
+                markup = self.message.get_blank_markup_dict(mklist=mklist, mktype="ReplyKeyboardMarkup")   
+                self.message.send(in_message.from_user.id, text=mess_txt, reply_markup=markup)    
 
         elif message_type!="document"  and not same_route:
             variants = node.get_variants(request)
             request.set(node_variants=variants)
-            self.message.add_markup(variants["variant_list"], "ReplyKeyboardMarkup")  
+            mklist = []
+            if len(variants["variant_list"])>0:
+                mklist.append(variants["variant_list"])  
             if route!=str(def_route) and str(route)!=str(def_route_noauth) \
                 and not node.get("fast_back", False):
                 markup_variants = [self.bot.main_variant, variants["back_variant"]]
                 if variants["forvard_variant"]:
                     markup_variants.append(variants["forvard_variant"])
-                self.message.add_markup(markup_variants, "ReplyKeyboardMarkup")
+                mklist.append(markup_variants)
             if type(route_data) is dict and route_data.get("text", "")!="":
                 mess_txt = route_data.get("text", "")
             else:    
                 mess_txt = node.get("message", "").format(name=in_message.from_user.first_name) 
-            self.message.send(in_message.chat.id, text=mess_txt)
+            markup = self.message.get_blank_markup_dict(mklist=mklist, mktype="ReplyKeyboardMarkup")      
+            self.message.send(in_message.chat.id, text=mess_txt, reply_markup=markup)
 
         # Надо вызвать функцию ноды
         if node.get("contoller", False) and node.get("contoller_action", False):
@@ -342,10 +350,10 @@ Examples:
         print(f"Try to run bot with custom {custom}")  
 
         if action == 'start':
-            tgbot = self.message.bot
+            config = self.config.get_config("main") 
+            tgbot = telebot.TeleBot(config["telegram"]["api_token"])
 
-            if self.message.get_status():
-                
+            if self.message.status:
                 @tgbot.message_handler(commands=['start'])
                 def start(in_message):
                     try:
