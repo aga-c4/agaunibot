@@ -80,7 +80,7 @@ Examples:
     def use_route(self, in_message, message_type:str="text", route_data:dict=None):
         config = self.config.get_config("main")     
         # Идентентификация пользователя
-        user = User(self.config, in_message.from_user.id)
+        user = User(self.config, in_message.from_user["id"])
         sess = MemSess(user)
         lang = sess.get("lang", self.default_lang)
         _ = Lang.get_lang_funct(lang)
@@ -130,10 +130,10 @@ Examples:
                     same_route = True       
 
         if message_type=="callback" or message_type=="document":
-            chatid = in_message.from_user.id
+            chatid = in_message.from_user["id"]
             is_script_command = True
         else:
-            chatid = in_message.chat.id
+            chatid = in_message.chat["id"]
             is_script_command = False      
 
         # Анализа введенного текста, если будет найдено соответствие, то будет выведен текст
@@ -226,7 +226,7 @@ Examples:
                     mklist.append(markup_variants)
                 mess_txt = node.get("message", "")
                 markup = self.message.get_blank_markup_dict(mklist=mklist, mktype="ReplyKeyboardMarkup")   
-                self.message.send(in_message.from_user.id, text=mess_txt, reply_markup=markup)    
+                self.message.send(in_message.from_user["id"], text=mess_txt, reply_markup=markup)    
 
         elif message_type!="document"  and not same_route:
             variants = node.get_variants(request)
@@ -243,9 +243,9 @@ Examples:
             if type(route_data) is dict and route_data.get("text", "")!="":
                 mess_txt = route_data.get("text", "")
             else:    
-                mess_txt = node.get("message", "").format(name=in_message.from_user.first_name) 
+                mess_txt = node.get("message", "").format(name=in_message.from_user["first_name"]) 
             markup = self.message.get_blank_markup_dict(mklist=mklist, mktype="ReplyKeyboardMarkup")      
-            self.message.send(in_message.chat.id, text=mess_txt, reply_markup=markup)
+            self.message.send(in_message.chat["id"], text=mess_txt, reply_markup=markup)
 
         # Надо вызвать функцию ноды
         if node.get("contoller", False) and node.get("contoller_action", False):

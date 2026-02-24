@@ -37,11 +37,10 @@ class BotController:
     def registration(self, request:Request):
         logging.info(str(request.user.id)+": BotController:registration")  
         message = Message(request.bot.config["telegram"])     
-        mess_data = request.bot.get_data_from_message(request.message)
 
-        if request.is_script_command and mess_data["command"]=="registration": 
-            message.edit_message_text(request.message.from_user.id, 
-                                        message_id=request.message.message.message_id, 
+        if request.is_script_command and request.message.command=="registration": 
+            message.edit_message_text(request.message.from_user["id"], 
+                                        message_id=request.message.message_id, 
                                         new_text=_("Сообщите администратору идентификатор, который вы увидите"),
                                         reply_markup=None) 
             message.send(request.chatid, text=_("Ваш идентификатор: ") + str(request.user.id))                
@@ -54,9 +53,8 @@ class BotController:
     def authorization(self, request:Request):
         logging.info(str(request.user.id)+": BotController:authorization")  
         message = Message(request.bot.config["telegram"])   
-        mess_data = request.bot.get_data_from_message(request.message, request.route_data)
-        if mess_data["text"]!=_("Авторизация") and mess_data["text"]!="":
-            if mess_data["text"]=="password":
+        if request.message.text!=_("Авторизация") and request.message.text!="":
+            if request.message.text=="password":
                 udata = {
                     "id": request.user.id,
                     "params": {},
@@ -110,4 +108,5 @@ class BotController:
         request.user.set_data(udata)
         request.session.delete()
         logging.info(str(request.user.id) + f": logout")  
-        return {"redirect": {"route":[]}}       
+        return {"redirect": {"route":[]}}      
+    

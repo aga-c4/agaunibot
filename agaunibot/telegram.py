@@ -3,6 +3,8 @@ from telebot import types # для указание типов
 import logging
 from time import sleep
 
+from .inmessage import InMessage
+
 class Telegram:
 
     status = False
@@ -157,85 +159,34 @@ class Telegram:
             user_info["username"] = ""    
         return user_info
     
-    
-    def get_data_from_message(self, in_message):
-        res = {
-            "command": "",
-            "command_obj": None,
-            "command_info": None,
-            "text": "",
-            "data": "",
-            "json": {},
-            "from_user": {},
-            "chat": {}
-        }
-        res["command"], res["command_obj"], res["command_info"] = self.get_dev_comm_by_str(in_message)
-
-        if hasattr(in_message, "data"):
-            res["data"] = in_message.data
-        if hasattr(in_message, "text"):
-            res["text"] = in_message.text  
-        if hasattr(in_message, "json"):
-            res["json"] = in_message.json      
-
-        res["from_user"]={}
-        if hasattr(in_message, "from_user"):
-            if hasattr(in_message.from_user, "id"):
-                res["from_user"]["id"] = in_message.from_user.id
-            if hasattr(in_message.from_user, "id"):
-                res["from_user"]["first_name"] = in_message.from_user.first_name
-        
-        res["chat"]={}
-        if hasattr(in_message, "chat"):
-            res["chat"]["id"] = in_message.chat.id
-        
-        return res
-    
-    
-    def get_dev_comm_by_str(self, route_str:str=None): 
-        command = ""
-        obj = ""
-        info = ""
-        route_str_upd = route_str.strip()
-        if route_str_upd != "":
-            all_route_list = route_str_upd.split(':')
-            if len(all_route_list)>1:
-                command = all_route_list[1].strip()
-            if len(all_route_list)>2:
-                obj = all_route_list[2].strip()
-            if len(all_route_list)>3:
-                info = all_route_list[3]    
-
-        return (command, obj, info)
-    
 
     def bind_message_funct(self, botapp):
 
         @self.bot.message_handler(commands=['start'])
         def start(in_message):
             try:
-                botapp.use_route(in_message=self.get_data_from_message(in_message), message_type="start")
+                botapp.use_route(in_message=InMessage(in_message), message_type="start")
             except Exception:
                 logging.exception("Exeption in message_handler:commands:start:")     
                 
         @self.bot.message_handler(content_types=['text'])
         def func(in_message):
             try:
-                botapp.use_route(in_message=self.get_data_from_message(in_message), message_type="text")
+                botapp.use_route(in_message=InMessage(in_message), message_type="text")
             except Exception:
                 logging.exception("Error in message_handler:content_types:text")             
 
         @self.bot.callback_query_handler()
         def callback_query(in_message):
             try:
-                botapp.use_route(in_message=self.get_data_from_message(in_message), message_type="callback")
+                botapp.use_route(in_message=InMessage(in_message), message_type="callback")
             except Exception:
                 logging.exception("Error in callback_query_handler")    
 
         @self.bot.message_handler(content_types=['document'])
         def handle_docs_photo(in_message):
             try:
-                botapp.use_route(in_message=self.get_data_from_message(in_message), message_type="document")
+                botapp.use_route(in_message=InMessage(in_message), message_type="document")
             except Exception:
                 logging.exception("Error in message_handler:content_types:document")  
 
@@ -244,6 +195,6 @@ class Telegram:
                 logging.info("Try to connect by Telebot")    
                 self.bot.polling(none_stop=True)
             except Exception:
-                logging.exception("Error in Telebot, reconnect in 60s")    
-                self.bot.sleep(60)             
+                logging.exception("Error in Telebot, reconnect in 60s")  
+                sleep(60)             
 

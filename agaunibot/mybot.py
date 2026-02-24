@@ -191,25 +191,4 @@ class MyBot:
      
     def get_ip(self):
         return "IP not found" 
-    
-    def get_data_from_message(self, in_message, route_data:dict=None):
-        res = {
-            "command": "",
-            "command_obj": None,
-            "command_info": None,
-            "text": ""
-        }
-        if not route_data is None and type(route_data) is dict:
-            res["command"] = route_data.get("command", ""),
-            res["command_obj"] =  route_data.get("command_obj", ""),
-            res["command_info"] = res["redirect"].get("command_info", ""),
-            res["text"] = res["redirect"].get("text", "")
-        else:
-            if hasattr(in_message, "data"):
-                command, command_obj, command_info = self.get_dev_comm_by_str(in_message.data)
-                res["command"] = command
-                res["command_obj"] = command_obj
-                res["command_info"] = command_info
-            if hasattr(in_message, "text"):
-                res["text"] = in_message.text  
-        return res    
+ 
