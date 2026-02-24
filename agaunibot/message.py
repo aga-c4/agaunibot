@@ -28,6 +28,7 @@ class Message():
     def bind_message_funct(self, botapp):
         self.driver.bind_message_funct(botapp)
 
+
     def send(self, channel:str, text:str, img_buf=None, reply_markup=None) -> int:
         if not self.status:
             return 0  
@@ -102,7 +103,7 @@ class Message():
                             found_markup.add(add_list)    
                     use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")            
 
-                self.bot.edit_message_text(channel=channel, 
+                self.driver.edit_message_text(channel=channel, 
                                            message_id=message_id, 
                                            new_text=new_text, 
                                            reply_markup=use_markup)
@@ -130,7 +131,7 @@ class Message():
                             found_markup.add(add_list)    
                     use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")             
 
-                self.bot.edit_message_media(channel=channel, 
+                self.driver.edit_message_media(channel=channel, 
                                            message_id=message_id, 
                                            img_buf=img_buf,
                                            reply_markup=use_markup)
@@ -148,7 +149,7 @@ class Message():
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to delete")   
         try:
-                self.bot.delete_message(channel=channel, message_id=message_id)
+                self.driver.delete_message(channel=channel, message_id=message_id)
                 return 1
         except Exception:
             logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages delete error")
