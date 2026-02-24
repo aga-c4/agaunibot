@@ -20,7 +20,7 @@ class MemSess:
         self.user_id_str = str(user.id)
         if self.user_id_str in MemSess.sessions:
             self.up()
-            user.set_data(self.get("user_data"))
+            user.set_data(self.get("user_data", {}))
             user.set_auth(self.get("user_auth", False)) 
             
 

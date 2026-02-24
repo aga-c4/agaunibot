@@ -1,6 +1,3 @@
-import telebot
-from telebot import types # для указание типов
-from telebot.util import quick_markup
 import logging
 from time import sleep
 
@@ -28,6 +25,8 @@ class Message():
             self.driver = SysBf.class_factory(self.import_driver, self.driver_class, conf.get(self.driver_alias, {}))
             logging.info("Use bot driver: {0}".format(self.driver_class)) 
 
+    def bind_message_funct(self, botapp):
+        self.driver.bind_message_funct(botapp)
 
     def send(self, channel:str, text:str, img_buf=None, reply_markup=None) -> int:
         if not self.status:
@@ -159,15 +158,15 @@ class Message():
     def get_blank_markup_dict(self, *, mktype:str="InlineKeyboardMarkup", mklist:list=[], row_width:int=0):
         if row_width==0:
             row_width = self.def_markup_row_width
-        if mktype=="ReplyKeyboardMarku":
-            mktype_str = "ReplyKeyboardMarku"
+        if mktype=="ReplyKeyboardMarkup":
+            mktype_str = "ReplyKeyboardMarkup"
         else:
             mktype_str = "InlineKeyboardMarkup"  
         if len(mklist)>0:      
             return {
                 "type": mktype_str,
                 "row_width": row_width,
-                "items":[]
+                "items": mklist
             } 
         else:
             None       

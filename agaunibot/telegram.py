@@ -1,6 +1,5 @@
 import telebot
 from telebot import types # для указание типов
-from telebot.util import quick_markup
 import logging
 from time import sleep
 
@@ -20,7 +19,7 @@ class Telegram:
         if self.status:
             try:   
                 self.bot = telebot.TeleBot(telegram_api_token)
-                logging.warning("TeleBot is activated!")
+                logging.info("TeleBot is activated!")
             except:
                 logging.warning("TeleBot init problems!")
                 self.status = False
@@ -87,12 +86,15 @@ class Telegram:
 
 
     def prepare_markup(self, reply_markup:dict=None):
+        if reply_markup is None:
+            return None
+        
         mktype_in = reply_markup.get("type", "InlineKeyboardMarkup")
-        if mktype_in=="ReplyKeyboardMarku":
-            mktype = "ReplyKeyboardMarku"
+        if mktype_in=="ReplyKeyboardMarkup":
+            mktype = "ReplyKeyboardMarkup"
         else:
-            mktype = "InlineKeyboardMarkup" 
-        row_width = reply_markup.get("type", 3)    
+            mktype = "InlineKeyboardMarkup"    
+        row_width = reply_markup.get("row_width", 3)    
         items_groups = reply_markup.get("items", [])
         if not type(items_groups)==list or len(items_groups)==0:
             return None
@@ -111,17 +113,35 @@ class Telegram:
                                     add_list.append(types.InlineKeyboardButton(mkitem, callback_data=mkitem))    
                             markup.add(*add_list)    
                     else:
-                        add_list = []
-                        for mkitem in itemlist:
-                            if type(mkitem) is dict:
-                                add_list.append(types.InlineKeyboardButton(mkitem["text"], callback_data=mkitem["command"]))
+                        add_list_all = []
+                        if type(itemlist) is list:
+                            add_list = []
+                            for mkitem in itemlist:
+                                if type(mkitem) is dict:
+                                    add_list.append(types.InlineKeyboardButton(mkitem["text"], callback_data=mkitem["command"]))
+                                else:
+                                    add_list.append(types.InlineKeyboardButton(mkitem, callback_data=mkitem))
+                                markup.add(*add_list)       
+                        else:
+                            if type(itemlist) is dict:
+                                add_list_all.append(types.InlineKeyboardButton(itemlist["text"], callback_data=itemlist["command"]))
                             else:
-                                add_list.append(types.InlineKeyboardButton(mkitem, callback_data=mkitem))    
-                        markup.add(*add_list) 
+                                add_list_all.append(types.InlineKeyboardButton(itemlist, callback_data=itemlist))
+                        markup.add(*add_list_all)       
             elif mktype=="ReplyKeyboardMarkup":      
                 # Здесь список одноуровневый с просто текстовыми элементами
                 markup = types.ReplyKeyboardMarkup(resize_keyboard=True)
-                markup.add(*items_groups)
+                add_list_all = []
+                for itemlist in items_groups:
+                    if type(itemlist) is list:
+                        add_list = []
+                        for mkitem in itemlist:
+                            if type(mkitem) is str:
+                                add_list.append(mkitem)   
+                        markup.add(*add_list)
+                    elif type(itemlist) is str:
+                        add_list_all.append(itemlist)   
+                    markup.add(*add_list_all)        
                
         return markup
 
@@ -136,4 +156,43 @@ class Telegram:
         else:
             user_info["username"] = ""    
         return user_info
+    
+
+    def bind_message_funct(self, botapp):
+
+        @self.bot.message_handler(commands=['start'])
+        def start(in_message):
+            try:
+                botapp.use_route(in_message=in_message, message_type="start")
+            except Exception:
+                logging.exception("Exeption in message_handler:commands:start:")     
+                
+        @self.bot.message_handler(content_types=['text'])
+        def func(in_message):
+            try:
+                botapp.use_route(in_message=in_message, message_type="text")
+            except Exception:
+                logging.exception("Error in message_handler:content_types:text")             
+
+        @self.bot.callback_query_handler()
+        def callback_query(in_message):
+            try:
+                botapp.use_route(in_message=in_message, message_type="callback")
+            except Exception:
+                logging.exception("Error in callback_query_handler")    
+
+        @self.bot.message_handler(content_types=['document'])
+        def handle_docs_photo(in_message):
+            try:
+                botapp.use_route(in_message=in_message, message_type="document")
+            except Exception:
+                logging.exception("Error in message_handler:content_types:document")  
+
+        while True:
+            try:
+                logging.info("Try to connect by Telebot")    
+                self.bot.polling(none_stop=True)
+            except Exception:
+                logging.exception("Error in Telebot, reconnect in 60s")    
+                self.bot.sleep(60)             
 

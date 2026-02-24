@@ -350,45 +350,8 @@ Examples:
         print(f"Try to run bot with custom {custom}")  
 
         if action == 'start':
-            config = self.config.get_config("main") 
-            tgbot = telebot.TeleBot(config["telegram"]["api_token"])
-
             if self.message.status:
-                @tgbot.message_handler(commands=['start'])
-                def start(in_message):
-                    try:
-                        self.use_route(in_message=in_message, message_type="start")
-                    except Exception:
-                        logging.exception("Exeption in message_handler:commands:start:")     
-                        
-                @tgbot.message_handler(content_types=['text'])
-                def func(in_message):
-                    try:
-                        self.use_route(in_message=in_message, message_type="text")
-                    except Exception:
-                        logging.exception("Error in message_handler:content_types:text")             
-
-                @tgbot.callback_query_handler()
-                def callback_query(in_message):
-                    try:
-                        self.use_route(in_message=in_message, message_type="callback")
-                    except Exception:
-                        logging.exception("Error in callback_query_handler")    
-
-                @tgbot.message_handler(content_types=['document'])
-                def handle_docs_photo(in_message):
-                    try:
-                        self.use_route(in_message=in_message, message_type="document")
-                    except Exception:
-                        logging.exception("Error in message_handler:content_types:document")            
-
-                while True:
-                    try:
-                        logging.info("Try to connect by Telebot")    
-                        tgbot.polling(none_stop=True)
-                    except Exception:
-                        logging.exception("Error in Telebot, reconnect in 60s")    
-                        time.sleep(60)    
+                self.message.bind_message_funct(self)
         else:
             BotApp.help()
 
