@@ -5,54 +5,25 @@ from agaunibot.message import Message
 
 class BotController:
 
-    def get_map(self, request:Request):
-        logging.info(str(request.user.id)+": BotController:bot_map")    
-        message = Message(request.bot.config["telegram"])   
-        def_route = request.bot.def_route
-        node = request.bot.get_node_by_route(lang=request.lang, def_route=def_route)   
-        for vi1,item1 in node["variants"].items():
-            if vi1!="map":
-                route = request.bot.def_route[:]
-                route.append(vi1)
-                mklist=[]
-                mklist.append([{"text":item1["action"], "command":'.'.join(route)}])
-                if "variants" in item1:
-                    items_list = []
-                    for vi2,item2 in item1["variants"].items():
-                        if vi2!="map":
-                            route2 = route[:]
-                            route2.append(vi2)
-                            items_list.append({"text":item2["action"], "command":'.'.join(route2)})
-                    if len(items_list)>0:        
-                        mklist.add(items_list)
-                markup = message.get_blank_markup_dict(mklist=mklist)    
-                message.send(request.chatid, text=">", reply_markup=markup)    
-
-    def get_ip(self, request:Request):
-        logging.info(str(request.user.id)+": BotController:get_ip")  
-        message = Message(request.bot.config["telegram"])    
-        mess_txt = request.bot.get_ip()
-        message.send(request.chatid, text=mess_txt) 
+    def __init__(self):
+        self.message = Message() 
 
     def registration(self, request:Request):
         logging.info(str(request.user.id)+": BotController:registration")  
-        message = Message(request.bot.config["telegram"])     
-
         if request.is_script_command and request.message.command=="registration": 
-            message.edit_message_text(request.message.from_user["id"], 
+            self.message.edit_message_text(request.message.from_user["id"], 
                                         message_id=request.message.message_id, 
                                         new_text=_("Сообщите администратору идентификатор, который вы увидите"),
                                         reply_markup=None) 
-            message.send(request.chatid, text=_("Ваш идентификатор: ") + str(request.user.id))                
+            self.message.send(request.chatid, text=_("Ваш идентификатор: ") + str(request.user.id))                
         else:    
             logging.info("command: "+request.route_str+":registration")  
             mklist = [{"text":_("Зарегистрироваться"), "command":request.route_str+":registration"}]  
-            markup = message.get_blank_markup_dict(mklist=mklist)        
-            message.send(request.chatid, text=_("Авторизуйтесь или зарегистрируйтесь для начала работы с системой"), reply_markup=markup) 
+            markup = self.message.get_blank_markup_dict(mklist=mklist)        
+            self.message.send(request.chatid, text=_("Авторизуйтесь или зарегистрируйтесь для начала работы с системой"), reply_markup=markup) 
 
     def authorization(self, request:Request):
-        logging.info(str(request.user.id)+": BotController:authorization")  
-        message = Message(request.bot.config["telegram"])   
+        logging.info(str(request.user.id)+": BotController:authorization")    
         if request.message.text!=_("Авторизация") and request.message.text!="":
             if request.message.text=="password":
                 udata = {
@@ -71,7 +42,7 @@ class BotController:
                 logging.info(str(request.user.id) + f": redirect to []")  
                 return {"redirect": {"route":[]}}
             else:     
-                message.send(request.chatid, text=_("Пароль не найден!") + str(request.user.id))                
+                self.message.send(request.chatid, text=_("Пароль не найден!") + str(request.user.id))                
         else: 
             # Смотрим админа в конфиге и пользователей в файле, если не находим, то предлагаем ввести пароль 
             udata = request.user.get_user_info() 
@@ -83,19 +54,17 @@ class BotController:
                 logging.info(str(request.user.id) + f": redirect to []")  
                 return {"redirect": {"route":[]}}
             else:    
-                message.send(request.chatid, text=_("Введите пароль:"))             
+                self.message.send(request.chatid, text=_("Введите пароль:"))             
 
     def help(self, request:Request):
-        logging.info(str(request.user.id)+": BotController:help")  
-        message = Message(request.bot.config["telegram"])    
+        logging.info(str(request.user.id)+": BotController:help")   
         mess_txt = _("AUTH: Это демо пример работы фреймворка, на базе которого можно создать телеграм бота.")
-        message.send(request.chatid, text=mess_txt)         
+        self.message.send(request.chatid, text=mess_txt)         
 
     def logout(self, request:Request):
-        logging.info(str(request.user.id)+": BotController:logout")  
-        message = Message(request.bot.config["telegram"])    
+        logging.info(str(request.user.id)+": BotController:logout")    
         mess_txt = _("Вы вышли из системы")
-        message.send(request.chatid, text=mess_txt)  
+        self.message.send(request.chatid, text=mess_txt)  
         udata = {
             "id": request.user.id,
             "params": {},
@@ -110,3 +79,29 @@ class BotController:
         logging.info(str(request.user.id) + f": logout")  
         return {"redirect": {"route":[]}}      
     
+
+    def get_map(self, request:Request):
+        logging.info(str(request.user.id)+": BotController:bot_map")    
+        node = request.bot.get_node_by_route(lang=request.lang, def_route=request.bot.def_route)   
+        for vi1,item1 in node["variants"].items():
+            if vi1!="map":
+                route = request.bot.def_route[:]
+                route.append(vi1)
+                mklist=[]
+                mklist.append([{"text":item1["action"], "command":'.'.join(route)}])
+                if "variants" in item1:
+                    items_list = []
+                    for vi2,item2 in item1["variants"].items():
+                        if vi2!="map":
+                            route2 = route[:]
+                            route2.append(vi2)
+                            items_list.append({"text":item2["action"], "command":'.'.join(route2)})
+                    if len(items_list)>0:        
+                        mklist.add(items_list)
+                markup = self.message.get_blank_markup_dict(mklist=mklist)    
+                self.message.send(request.chatid, text=">", reply_markup=markup)    
+
+    def get_ip(self, request:Request):
+        logging.info(str(request.user.id)+": BotController:get_ip")  
+        mess_txt = request.bot.get_ip()
+        self.message.send(request.chatid, text=mess_txt)

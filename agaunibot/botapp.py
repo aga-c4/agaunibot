@@ -64,7 +64,7 @@ Examples:
         if type(self.default_lang) is str and self.default_lang in Lang.available_langs:
             Lang.install_lang(self.default_lang)
         self.bot = MyBot(self.config)
-        self.message = Message(config)
+        self.message = Message(config) # Тут подгружается конфиг, дальше будет работать как синглтон
         # TODO - Продумать уведомления
         # if self.message.status:
         #     self.message.send(config["telegram"]["channels"]["domchat"], text=f"Bot started!") 
