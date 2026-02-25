@@ -114,6 +114,9 @@ Examples:
                 pgnom = int(in_message.text[btn_pg_prefix_len:])
                 if pgnom>0:
                     pgnom -= 1   
+                # Отработала команда, номер страницы сменился, почистим текст, чтоб дальше не мешался
+                if old_route!=route:
+                    in_message.text = ""      
             else:
                 prev_route = str(route)  
                 if message_type=="callback":
@@ -121,8 +124,10 @@ Examples:
                 elif message_type=="text": 
                     old_route = route[:]    
                     route = self.bot.get_route_by_variant(user=user, route=route, variant=in_message.text, lang=lang)    
-                    # Если роут не сменился, то подключим анализ текстовой строки
-                    if old_route==route:
+                    # Отработала команда, роут сменился, почистим текст, чтоб дальше не мешался
+                    if old_route!=route:
+                        in_message.text = ""    
+                    else:    
                         text_to_analyse = in_message.text
                 if str(route)!=prev_route:
                     pgnom = 0

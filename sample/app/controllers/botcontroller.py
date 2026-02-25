@@ -24,7 +24,7 @@ class BotController:
 
     def authorization(self, request:Request):
         logging.info(str(request.user.id)+": BotController:authorization")    
-        if request.message.text!=_("Авторизация") and request.message.text!="":
+        if request.message.text!="":
             if request.message.text=="password":
                 udata = {
                     "id": request.user.id,
