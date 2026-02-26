@@ -174,6 +174,7 @@ Examples:
             same_route = same_route,
             pgnom = pgnom,
             message = in_message,
+            message_type = message_type, 
             route_data = route_data,
             chatid = chatid,
             is_script_command = is_script_command
@@ -207,6 +208,7 @@ Examples:
                 same_route = same_route,
                 pgnom = pgnom,
                 message = in_message,
+                message_type = message_type, 
                 route_data = route_data,
                 chatid = chatid,
                 is_script_command = is_script_command
