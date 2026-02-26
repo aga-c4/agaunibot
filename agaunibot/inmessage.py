@@ -12,7 +12,7 @@ class InMessage:
     reply_markup = None
     
     def __init__(self, in_message):
-
+        # TODO - Привязать к классу мессенджера 
         if hasattr(in_message, "data"):
             self.data = in_message.data
             self.command, self.command_obj, self.command_info = self.get_dev_comm_by_str(in_message.data)
@@ -21,7 +21,7 @@ class InMessage:
             self.text = in_message.text  
         if hasattr(in_message, "json"):
             self.json = in_message.json  
-            self.reply_markup = in_message.json.get("message", {}).get("reply_markup", None)       
+            self.reply_markup = in_message.json.get("message", {}).get("reply_markup", {}).get("inline_keyboard", None)       
         if hasattr(in_message, "message") and hasattr(in_message.message, "id"):     
             self.message_id = in_message.message.message_id     
 
