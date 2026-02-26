@@ -9,6 +9,7 @@ class InMessage:
     from_user = {"id": 0, "first_name":""}
     chat = {"id": 0}
     rotelist = []
+    reply_markup = None
     
     def __init__(self, in_message):
 
@@ -19,7 +20,8 @@ class InMessage:
         if hasattr(in_message, "text"):
             self.text = in_message.text  
         if hasattr(in_message, "json"):
-            self.json = in_message.json     
+            self.json = in_message.json  
+            self.reply_markup = in_message.json.get("message", {}).get("reply_markup", None)       
         if hasattr(in_message, "message") and hasattr(in_message.message, "id"):     
             self.message_id = in_message.message.message_id     
 
