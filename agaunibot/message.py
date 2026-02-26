@@ -91,22 +91,11 @@ class Message():
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to edit: {new_text}")   
         try:
-            if new_text!='':
-                use_markup = None
-                if not reply_markup is None and type(reply_markup) is dict and "inline_keyboard" in reply_markup:
-                    found_markup = []
-                    for mkitemlist in reply_markup["inline_keyboard"]:
-                        add_list = []
-                        for mkitem in mkitemlist:
-                            add_list.append({"text": mkitem["text"], "callback_data": mkitem["callback_data"]})
-                        if len(add_list)>0:  
-                            found_markup.add(add_list)    
-                    use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")            
-
+            if new_text!='':         
                 self.driver.edit_message_text(channel=channel, 
                                            message_id=message_id, 
                                            new_text=new_text, 
-                                           reply_markup=use_markup)
+                                           reply_markup=reply_markup)
 
                 return 1
         except Exception:
@@ -119,22 +108,11 @@ class Message():
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to edit: photo")   
         try:
-            if not img_buf is None:
-                use_markup = None
-                if not reply_markup is None and type(reply_markup) is dict and "inline_keyboard" in reply_markup:
-                    found_markup = []
-                    for mkitemlist in reply_markup["inline_keyboard"]:
-                        add_list = []
-                        for mkitem in mkitemlist:
-                            add_list.append({"text": mkitem["text"], "callback_data": mkitem["callback_data"]})
-                        if len(add_list)>0:  
-                            found_markup.add(add_list)    
-                    use_markup = self.get_blank_markup_dict(mklist=found_markup, mktype="InlineKeyboardMarkup")             
-
+            if not img_buf is None:       
                 self.driver.edit_message_media(channel=channel, 
                                            message_id=message_id, 
                                            img_buf=img_buf,
-                                           reply_markup=use_markup)
+                                           reply_markup=reply_markup)
 
                 return 1
         except Exception:

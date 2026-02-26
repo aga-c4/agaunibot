@@ -3,7 +3,6 @@ import argparse
 import time
 from datetime import datetime
 import logging
-import telebot
 
 from .config import Config
 from agaunibot.lang import Lang
@@ -180,8 +179,10 @@ Examples:
             is_script_command = is_script_command
             )   
 
-        logging.info(f"{user.id}: route={str(route)}; pgnom={pgnom+1}; same_route={same_route}; lang={lang}")
+        logging.info(f"{user.id}: route={str(route)}; pgnom={pgnom+1}; same_route={same_route}; message_type={message_type}; lang={lang}")
         logging.info(f"{user.id}: auth={user.auth}; roles={user.roles}")
+        if in_message.command!="":
+            logging.info(f"{user.id}: is_script_command={is_script_command}; command={in_message.command}; command_obj: {in_message.command_obj}; command_info={in_message.command_info}")
 
         # Открытие ноды
         node = Node(request)

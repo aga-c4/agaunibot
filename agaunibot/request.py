@@ -8,6 +8,7 @@ class Request:
             "pgnom": 0,
             "user": None,
             "message": None,
+            "message_type": None,
             "chatid": None,
             "is_script_command": False
         }
@@ -69,7 +70,11 @@ class Request:
     @property
     def message(self):
         return self._data.get("message", None)    
-    
+
+    @property
+    def message_type(self):
+        return self._data.get("message_type", None)  
+
     @property
     def chatid(self):
         return self._data.get("chatid", None)    
