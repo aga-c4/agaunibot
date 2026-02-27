@@ -21,7 +21,28 @@ class InMessage:
             self.text = in_message.text  
         if hasattr(in_message, "json"):
             self.json = in_message.json  
-            self.reply_markup = in_message.json.get("message", {}).get("reply_markup", {}).get("inline_keyboard", None)       
+            self.reply_markup = None
+            reply_markup = in_message.json.get("message", {}).get("reply_markup", {}).get("inline_keyboard", None)  
+            all_markup_list = []
+            if type(reply_markup) is list:
+                for grlist in reply_markup:
+                    if type(grlist) is list:
+                        markup_list = [] 
+                        for item in grlist:
+                            if type(item) is dict:
+                                if item.get("text","")!="":
+                                    markup_list.append({"text": item.get("text",""), "command": item.get("callback_data","")}) 
+                            else:
+                                markup_list.append(item)
+                        if len(markup_list)>0:
+                            all_markup_list.append(markup_list) 
+            if len(all_markup_list)>0:
+                print("all_markup_list:")
+                print(all_markup_list)
+                self.reply_markup = all_markup_list                 
+
+
+
         if hasattr(in_message, "message") and hasattr(in_message.message, "id"):     
             self.message_id = in_message.message.message_id     
 
@@ -59,3 +80,4 @@ class InMessage:
             if len(all_route_list)>1:
                 result = all_route_list[1:]    
         return result
+    
