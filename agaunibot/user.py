@@ -25,7 +25,7 @@ class User:
         custom = self.config_obj.custom.lower()
         self.users_file_path = f"app/configs/{custom}/users.json"
         self._data["id"] = user_id_str
-        self._udata = self.get_user_info()
+        self._data = self.get_user_info()
 
     def set_auth(self, status:bool):    
         self.auth = status
@@ -47,14 +47,16 @@ class User:
             udata["roles"].append("root")
             udata["exist"] = True
             udata["is_root"] = True  
-        users_reestr = self.get_users()          
-        if user_id_str in users_reestr:
-            udata["exist"] = True
-            udata["params"] = users_reestr[user_id_str].get("params", {})
-            udata["roles"] = users_reestr[user_id_str].get("roles", []) 
-            udata["lang"] = users_reestr[user_id_str].get("lang", "") 
-            udata["is_root"] = False
+        else:    
+            users_reestr = self.get_users()        
+            if user_id_str in users_reestr:
+                udata["exist"] = True
+                udata["params"] = users_reestr[user_id_str].get("params", {})
+                udata["roles"] = users_reestr[user_id_str].get("roles", []) 
+                udata["lang"] = users_reestr[user_id_str].get("lang", "") 
+                udata["is_root"] = False   
         return udata    
+    
     
     def set_data(self, newdata:dict):
         # self._data["id"] = newdata.get("id", 0)      

@@ -361,3 +361,5 @@ Examples:
                 self.message.bind_message_funct(self)
         else:
             BotApp.help()
+
+                

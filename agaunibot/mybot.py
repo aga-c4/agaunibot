@@ -49,8 +49,7 @@ class MyBot:
         if "def_route" in self.config["bot"]:
             self.def_route = self.config["bot"]["def_route"]  
         if "def_route_noauth" in self.config["bot"]:
-            self.def_route_noauth = self.config["bot"]["def_route_noauth"]            
-        print(self.locations)    
+            self.def_route_noauth = self.config["bot"]["def_route_noauth"]               
         logging.info("Bot reload configs")
 
     def get_node_by_route(self, route=None, lang:str="", def_route:list=None):
