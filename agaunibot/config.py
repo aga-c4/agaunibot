@@ -18,8 +18,8 @@ class Config:
         self.defconfig = defconfig
         self.def_config_pref = f"app.configs.{defconfig}" # Путь к директории с конфигурациями по умолчанию
         self.def_config_dir = f"app/configs/{defconfig}" # Путь к директории с конфигурациями по умолчанию
-        self.config_pref = f"app.configs.{self.custom}"  # Путь к директории с конфигурациями перекрывающими деф.
-        self.config_dir = f"app/configs/{self.custom}"  # Путь к директории с конфигурациями перекрывающими деф.
+        self.config_pref = f"app.configs.user.{self.custom}"  # Путь к директории с конфигурациями перекрывающими деф.
+        self.config_dir = f"app/configs/.user/{self.custom}"  # Путь к директории с конфигурациями перекрывающими деф.
         if type(allow_configs) is list:
              for conf_alias in allow_configs:
                  if not conf_alias in self.allow_configs:
