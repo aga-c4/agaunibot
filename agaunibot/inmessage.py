@@ -37,8 +37,6 @@ class InMessage:
                         if len(markup_list)>0:
                             all_markup_list.append(markup_list) 
             if len(all_markup_list)>0:
-                print("all_markup_list:")
-                print(all_markup_list)
                 self.reply_markup = all_markup_list                 
 
 
