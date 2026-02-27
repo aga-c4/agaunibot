@@ -113,15 +113,14 @@ Examples:
                 pgnom = int(in_message.text[btn_pg_prefix_len:])
                 if pgnom>0:
                     pgnom -= 1   
-                # Отработала команда, номер страницы сменился, почистим текст, чтоб дальше не мешался
-                if old_route!=route:
+                    # Отработала команда, номер страницы сменился, почистим текст, чтоб дальше не мешался
                     in_message.text = ""      
             else:
                 prev_route = str(route)  
                 if message_type=="callback":
                     route = self.bot.get_route_by_str(user=user, route_str=in_message.data, lang=lang)  
                 elif message_type=="text": 
-                    old_route = route[:]    
+                    old_route = route[:]  
                     route = self.bot.get_route_by_variant(user=user, route=route, variant=in_message.text, lang=lang)    
                     # Отработала команда, роут сменился, почистим текст, чтоб дальше не мешался
                     if old_route!=route:
@@ -362,5 +361,3 @@ Examples:
                 self.message.bind_message_funct(self)
         else:
             BotApp.help()
-
-                

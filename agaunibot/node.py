@@ -30,7 +30,7 @@ class Node:
             node = {}        
         return node 
     
-
+    
     def get_variants(self, request:Request):
         result = {"variant_list": [], 
                   "forvard_variant":request.bot.dop_variant, 

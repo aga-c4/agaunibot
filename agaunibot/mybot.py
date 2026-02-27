@@ -177,7 +177,8 @@ class MyBot:
         elif variant==_(self.dop_variant_noauth):
             cur_route = self.set_lang_to_route(route=self.dop_variant_route_noauth, lang=lang)        
         else:
-            node = self.get_node_by_route(lang=lang, def_route=def_route)
+            node = self.get_node_by_route(lang=lang, route=route, def_route=def_route)
+            cur_route = route
             if "variants" in node:  
                 for var_rt, var_node in node["variants"].items():
                     if "action" in var_node and var_node["action"]==variant:
@@ -186,7 +187,7 @@ class MyBot:
                             logging.info(str(user.id)+": redirect_to: " + str(cur_route))
                         else:       
                             cur_route.append(var_rt)
-                        break           
+                        break                  
         return cur_route
      
     def get_ip(self):
