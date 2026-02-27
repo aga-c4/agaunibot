@@ -1,5 +1,3 @@
-import logging
-
 from .request import Request
 
 class Node:
@@ -22,15 +20,16 @@ class Node:
         node = request.bot.bot_stru
         node_exist = False
         for key in route:   
-            view_roles = node["variants"][key].get("access", {}).get("view", None)
-            if "variants" in node and key in node["variants"] \
-                and (not type(view_roles) is dict \
+            if "variants" in node and key in node["variants"]:
+                view_roles = node["variants"][key].get("access", {}).get("view", None)
+                if (not type(view_roles) is dict \
                      or request.user.has_role(node["variants"][key].get("access", {}).get("view", "noroles"))):
-                node = node["variants"][key]    
-                node_exist = True   
+                    node = node["variants"][key]    
+                    node_exist = True   
         if not node_exist:
             node = {}        
         return node 
+    
 
     def get_variants(self, request:Request):
         result = {"variant_list": [], 
