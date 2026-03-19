@@ -197,8 +197,8 @@ class Telegram:
         while True:
             try:
                 logging.info("Try to connect by Telebot")    
-                self.bot.polling(none_stop=True)
+                self.bot.polling(none_stop=True, timeout=90)
             except Exception:
                 logging.exception("Error in Telebot, reconnect in 60s")  
-                sleep(60)             
+                sleep(15)             
 
