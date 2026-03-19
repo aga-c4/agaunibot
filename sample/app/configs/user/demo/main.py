@@ -14,6 +14,7 @@ class main:
         "telegram": {
             #AgaUniBot t.me/AgaUniBot
             "api_token": "",
+            "proxy": "", # login:password@ip:port'
             "channels": {
                 "domchat": "-0000000000000"
             }

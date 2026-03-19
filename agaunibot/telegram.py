@@ -1,5 +1,5 @@
 import telebot
-from telebot import types # для указание типов
+from telebot import types, apihelper # для указание типов
 import logging
 from time import sleep
 
@@ -14,6 +14,7 @@ class Telegram:
     def __init__(self, telegram_conf:dict):
         self.status = True
         telegram_api_token = telegram_conf.get('api_token', None)
+        telegram_proxy = telegram_conf.get('proxy', "")
         
         if telegram_api_token is None:
             self.status = False    
@@ -21,6 +22,9 @@ class Telegram:
         if self.status:
             try:   
                 self.bot = telebot.TeleBot(telegram_api_token)
+                logging.info(f"TeleBot use proxy")
+                if telegram_proxy!="":
+                    apihelper.proxy = {'https':'socks5://' + telegram_proxy}
                 logging.info("TeleBot is activated!")
             except:
                 logging.warning("TeleBot init problems!")

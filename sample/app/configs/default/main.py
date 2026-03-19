@@ -78,6 +78,7 @@ class main:
         # Параметры для публикации сообщений в канал рассылки в Телеграм
         "telegram": { 
             "api_token": "",
+            "proxy": "", # login:password@ip:port'
             "channels": {
                 "domchat": "-000000000000"
             }
