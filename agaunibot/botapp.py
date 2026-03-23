@@ -123,10 +123,13 @@ Examples:
             else:    
                 route = def_route_noauth  
         else:
-            if sess.get("route", False):    
-                route = self.bot.set_lang_to_route(route=sess.get("route", def_route), lang=lang)   
+            if user.auth:    
+                route = sess.get("route", def_route)
             else:    
-                route = def_route_noauth
+                if sess.exist:
+                    route = sess.get("route", def_route_noauth)
+                else:    
+                    route = def_route_noauth
             btn_pg_prefix  = config["bot"]["btn_pg_prefix"]
             btn_pg_prefix_len = len(btn_pg_prefix)
             if message_type=="text" and in_message.text.startswith(btn_pg_prefix) and in_message.text[btn_pg_prefix_len:].isdigit():
@@ -211,7 +214,7 @@ Examples:
             sess.set({"pgnom": pgnom})    
 
         if_auth_redirect = node.get("if_auth_redirect", None)
-        if sess.exist and type(if_auth_redirect) is list:
+        if user.auth and type(if_auth_redirect) is list:
             route = self.bot.set_lang_to_route(route=if_auth_redirect, lang=lang)
             same_route = False
             pgnom = 0
