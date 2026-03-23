@@ -123,7 +123,7 @@ Examples:
             else:    
                 route = def_route_noauth  
         else:
-            if user.auth:    
+            if sess.get("route", False):    
                 route = self.bot.set_lang_to_route(route=sess.get("route", def_route), lang=lang)   
             else:    
                 route = def_route_noauth
@@ -206,12 +206,12 @@ Examples:
 
         # Открытие ноды
         node = Node(request)
-        if user.auth and not node.get("fast_back", False):
+        if sess.exist and not node.get("fast_back", False):
             sess.set({"route": route})
             sess.set({"pgnom": pgnom})    
 
         if_auth_redirect = node.get("if_auth_redirect", None)
-        if user.auth and type(if_auth_redirect) is list:
+        if sess.exist and type(if_auth_redirect) is list:
             route = self.bot.set_lang_to_route(route=if_auth_redirect, lang=lang)
             same_route = False
             pgnom = 0
@@ -288,8 +288,12 @@ Examples:
                     route = sess.get("route", self.bot.def_route)
                     pgnom = sess.get("pgnom", 0)
                 else:    
-                    route = self.bot.def_route_noauth
-                    pgnom = 0
+                    if sess.exist:
+                        route = sess.get("route", self.bot.def_route)
+                        pgnom = sess.get("pgnom", 0)
+                    else:    
+                        route = self.bot.def_route_noauth
+                        pgnom = 0
                 route_data = {
                     "route": res["redirect"].get("route", route),
                     "same_route": res["redirect"].get("same_route", False),
