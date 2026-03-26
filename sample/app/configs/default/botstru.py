@@ -51,15 +51,6 @@ class botstru:
                         "access": {"view": "user"},
                         "fast_back": True       
                     },
-                    "logout": {
-                        "action": "Помощь",
-                        "menu_hide": True,
-                        "message": "Помощь:",
-                        "contoller": "BotController",
-                        "contoller_action": "logout",   
-                        "access": {"view": "user"},
-                        "fast_back": True    
-                    },
                     "settings": {
                         "action": "Настройки",
                         "message": "Настройки:",
@@ -81,7 +72,16 @@ class botstru:
                                 "fast_back": True     
                             }
                         }
-                    }
+                    },
+                    "logout": {
+                        "action": "Выход",
+                        "menu_hide": True,
+                        "message": "Выход:",
+                        "contoller": "BotController",
+                        "contoller_action": "logout",   
+                        "access": {"view": "user"},
+                        "fast_back": True    
+                    },
                 }   
             },
             "main_en": {
@@ -100,13 +100,6 @@ class botstru:
                         "message": "Send to channel:",
                         "contoller": "DemoController",
                         "contoller_action": "send_to_channel",   
-                        "access": {"view": "user"},    
-                    },
-                    "helpauth": {
-                        "action": "Help",
-                        "message": "Help:",
-                        "contoller": "BotController",
-                        "contoller_action": "help",   
                         "access": {"view": "user"},    
                     },
                     "settings": {
@@ -129,8 +122,18 @@ class botstru:
                                 "access": {"view": "user"}, 
                             }
                         }
-                    }
+                    },
+                    "logout": {
+                        "action": "Logout",
+                        "menu_hide": True,
+                        "message": "Logout",
+                        "contoller": "BotController",
+                        "contoller_action": "logout",   
+                        "access": {"view": "user"},
+                        "fast_back": True    
+                    },
                 }   
             }                          
         }
     }    
+    
