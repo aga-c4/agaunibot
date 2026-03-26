@@ -129,7 +129,7 @@ class BotController:
             all_markup_list = []
             buttoms = []
             for lng in langs:
-                buttoms.append({"text":lng, "command":request.route_str+":setlanh:"+lng+":"})              
+                buttoms.append({"text":lng, "command":request.route_str+":setlang:"+lng+":"})              
             if len(buttoms)>0:
                 all_markup_list.append(buttoms)                
             self.message.send(request.chatid, text=mess_txt, reply_markup=self.message.get_blank_markup_dict(mklist=all_markup_list)) 
