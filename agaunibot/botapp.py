@@ -124,9 +124,12 @@ Examples:
                 route = def_route_noauth  
         else:
             if user.auth:    
-                route = self.bot.set_lang_to_route(route=sess.get("route", def_route), lang=lang)   
+                route = sess.get("route", def_route)
             else:    
-                route = def_route_noauth
+                if sess.exist:
+                    route = sess.get("route", def_route_noauth)
+                else:    
+                    route = def_route_noauth
             btn_pg_prefix  = config["bot"]["btn_pg_prefix"]
             btn_pg_prefix_len = len(btn_pg_prefix)
             if message_type=="text" and in_message.text.startswith(btn_pg_prefix) and in_message.text[btn_pg_prefix_len:].isdigit():
@@ -206,7 +209,7 @@ Examples:
 
         # Открытие ноды
         node = Node(request)
-        if user.auth and not node.get("fast_back", False):
+        if sess.exist and not node.get("fast_back", False):
             sess.set({"route": route})
             sess.set({"pgnom": pgnom})    
 
@@ -288,8 +291,12 @@ Examples:
                     route = sess.get("route", self.bot.def_route)
                     pgnom = sess.get("pgnom", 0)
                 else:    
-                    route = self.bot.def_route_noauth
-                    pgnom = 0
+                    if sess.exist:
+                        route = sess.get("route", self.bot.def_route)
+                        pgnom = sess.get("pgnom", 0)
+                    else:    
+                        route = self.bot.def_route_noauth
+                        pgnom = 0
                 route_data = {
                     "route": res["redirect"].get("route", route),
                     "same_route": res["redirect"].get("same_route", False),

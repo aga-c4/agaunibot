@@ -23,9 +23,8 @@ class User:
         self.config_obj = config_obj
         user_id_str = str(user_id)
         custom = self.config_obj.custom.lower()
-        self.users_file_path = f"app/configs/{custom}/users.json"
+        self.users_file_path = f"app/configs/user/{custom}/users.json"
         self._data["id"] = user_id_str
-        self._data = self.get_user_info()
 
     def set_auth(self, status:bool):    
         self.auth = status
