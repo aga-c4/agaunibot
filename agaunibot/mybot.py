@@ -162,9 +162,9 @@ class MyBot:
 
         if route is None:
             cur_route = def_route
-        elif variant==self.main_variant:
+        elif variant==_(self.main_variant):
             cur_route = def_route
-        elif variant==self.back_variant:
+        elif variant==_(self.back_variant):
             if len(route)<2:
                 prev_route = def_route[:]
             else:
