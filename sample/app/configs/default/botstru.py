@@ -51,15 +51,6 @@ class botstru:
                         "access": {"view": "user"},
                         "fast_back": True       
                     },
-                    "help": {
-                        "action": "Помощь",
-                        "menu_hide": True,
-                        "message": "Помощь:",
-                        "contoller": "BotController",
-                        "contoller_action": "help",   
-                        "access": {"view": "user"},
-                        "fast_back": True    
-                    },
                     "logout": {
                         "action": "Помощь",
                         "menu_hide": True,
@@ -76,7 +67,7 @@ class botstru:
                         "variants": {
                             "lang": {
                                 "action": "Язык",
-                                "message": "Изменить язык интерфейса",
+                                "message": "",
                                 "access": {"view": "user"}, 
                                 "contoller": "BotController",
                                 "contoller_action": "set_lang"
@@ -125,7 +116,7 @@ class botstru:
                         "variants": {
                             "lang": {
                                 "action": "Lang",
-                                "message": "Set language",
+                                "message": "",
                                 "access": {"view": "user"}, 
                                 "contoller": "BotController",
                                 "contoller_action": "set_lang"

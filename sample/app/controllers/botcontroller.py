@@ -110,15 +110,16 @@ class BotController:
 
     def set_lang(self, request:Request):
         global _
-
+        
         logging.info(str(request.user.id)+": BotController:set_lang")   
-
+        langs = Lang.available_langs
         if request.is_script_command and request.message.command=="setlang":
             lang = str(request.message.command_obj).lower()
             if lang in Lang.available_langs:
                 request.session.set({"lang": lang}) 
                 _ = Lang.get_lang_funct(lang)
                 mess_txt = _("Текущий язык:") + " " + lang
+                '''
                 all_markup_list = []
                 buttoms = []
                 for lng in langs:
@@ -129,17 +130,18 @@ class BotController:
                                         message_id=request.message.message_id, 
                                         new_text=mess_txt,
                                         reply_markup=self.message.get_blank_markup_dict(mklist=all_markup_list)) 
+                '''
+                self.message.delete_message_text(request.message.from_user["id"], message_id=request.message.message_id)                        
                 return {"redirect": {"route":["def_node", "settings", "lang"]}}
         else:
-            langs = Lang.available_langs
             lang = request.session.get("lang", app.default_lang)
 
-            mess_txt = _("Текущий язык:") + "" + lang
+            mess_txt = _("Текущий язык") + ": " + lang
             
             all_markup_list = []
             buttoms = []
             for lng in langs:
-                buttoms.append({"text":lng, "command":request.route_str+":setlanh:"+lng+":"})              
+                buttoms.append({"text":lng, "command":request.route_str+":setlang:"+lng+":"})              
             if len(buttoms)>0:
                 all_markup_list.append(buttoms)                
             self.message.send(request.chatid, text=mess_txt, reply_markup=self.message.get_blank_markup_dict(mklist=all_markup_list)) 
