@@ -7,6 +7,10 @@
 python3 -m venv venv
 source venv/bin/activate
 pip3 install -r requirements.txt
+
+python -m venv venv
+venv\Scripts\activate.bat
+pip3 install -r requirements.txt
 ```
 3. Припишите телеграм идентификатор админа в config.system.telegram_admin_ids в конфигурации main.py
 4. Пропишите параметры доступа к боту и каналу в config.telegram
