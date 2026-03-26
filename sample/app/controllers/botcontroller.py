@@ -109,6 +109,8 @@ class BotController:
 
 
     def set_lang(self, request:Request):
+        global _
+
         logging.info(str(request.user.id)+": BotController:set_lang")   
 
         if request.is_script_command and request.message.command=="setlang":

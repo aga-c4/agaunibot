@@ -125,7 +125,7 @@ class Message():
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to delete")   
         try:
-                self.driver.delete_message(channel=channel, message_id=message_id)
+                self.driver.delete_message_text(channel=channel, message_id=message_id)
                 return 1
         except Exception:
             logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages delete error")

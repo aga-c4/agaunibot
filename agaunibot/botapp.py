@@ -209,10 +209,6 @@ Examples:
 
         # Открытие ноды
         node = Node(request)
-        if sess.exist and not node.get("fast_back", False):
-            sess.set({"route": route})
-            sess.set({"pgnom": pgnom})    
-
         if_auth_redirect = node.get("if_auth_redirect", None)
         if user.auth and type(if_auth_redirect) is list:
             route = self.bot.set_lang_to_route(route=if_auth_redirect, lang=lang)
@@ -238,9 +234,14 @@ Examples:
             self.request = request
             node = Node(request)  
             if not node.get("fast_back", False):
+                logging.info(f"{user.id} auth: save route to sess:")
                 sess.set({"route": route})
-                sess.set({"pgnom": pgnom}) 
-
+                sess.set({"pgnom": pgnom})
+                 
+        elif sess.exist and not node.get("fast_back", False):
+            logging.info(f"{user.id}: save route to sess:")
+            sess.set({"route": route})
+            sess.set({"pgnom": pgnom})        
 
         # Вывод кнопок основной навигации и сообщения роута
         if message_type=="callback":
@@ -252,9 +253,9 @@ Examples:
                 if len(variants["variant_list"])>0:
                     mklist.append(variants["variant_list"])  
                 if str(route)!=str(def_route) and not node.get("fast_back", False):
-                    markup_variants = [self.bot.main_variant, variants["back_variant"]]
+                    markup_variants = [_(self.bot.main_variant), _(variants["back_variant"])]
                     if variants["forvard_variant"]:
-                        markup_variants.append(variants["forvard_variant"])
+                        markup_variants.append(_(variants["forvard_variant"]))
                     mklist.append(markup_variants)
                 mess_txt = node.get("message", "")
                 markup = self.message.get_blank_markup_dict(mklist=mklist, mktype="ReplyKeyboardMarkup")   
@@ -268,9 +269,9 @@ Examples:
                 mklist.append(variants["variant_list"])  
             if route!=str(def_route) and str(route)!=str(def_route_noauth) \
                 and not node.get("fast_back", False):
-                markup_variants = [self.bot.main_variant, variants["back_variant"]]
+                markup_variants = [_(self.bot.main_variant), _(variants["back_variant"])]
                 if variants["forvard_variant"]:
-                    markup_variants.append(variants["forvard_variant"])
+                    markup_variants.append(_(variants["forvard_variant"]))
                 mklist.append(markup_variants)
             if type(route_data) is dict and route_data.get("text", "")!="":
                 mess_txt = route_data.get("text", "")
