@@ -74,13 +74,6 @@ class botstru:
                         "message": "Настройки:",
                         "access": {"view": "admin"}, 
                         "variants": {
-                            "lang": {
-                                "action": "Язык",
-                                "message": "Изменить язык интерфейса",
-                                "access": {"view": "user"}, 
-                                "contoller": "BotController",
-                                "contoller_action": "set_lang"
-                            },
                             "getip": {
                                 "action": "IP адрес",
                                 "message": "IP адрес бота:",
@@ -121,21 +114,14 @@ class botstru:
                     "settings": {
                         "action": "Settings",
                         "message": "Settings:",
-                        "access": {"view": "user"}, 
+                        "access": {"view": "admin"}, 
                         "variants": {
-                            "lang": {
-                                "action": "Lang",
-                                "message": "Set language",
-                                "access": {"view": "user"}, 
-                                "contoller": "BotController",
-                                "contoller_action": "set_lang"
-                            },
                             "getip": {
                                 "action": "IP addr",
                                 "message": "IP bot addr:",
                                 "contoller": "BotController",
                                 "contoller_action": "get_ip",    
-                                "access": {"view": "user"}, 
+                                "access": {"view": "admin"}, 
                             }
                         }
                     }
