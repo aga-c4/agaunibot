@@ -49,3 +49,33 @@ msgstr "Login to start working with the system"
 
 msgid "Это демо пример работы фреймворка, на базе которого можно создать телеграм бота."
 msgstr "This is a demo example of a framework that can be used to create a telegram bot."
+
+msgid "Вы вышли из системы"
+msgstr "You have logged out"
+
+msgid "Введите логин:"
+msgstr "Input login:"
+
+msgid "Проверочный код отправлен на почту. Введите полученный код:"
+msgstr "The verification code has been sent to your E-Mail. Enter the received code:"
+
+msgid "Ошибка отправки проверочного кода для"
+msgstr "Error sending the verification code for"
+
+msgid "Текущий язык"
+msgstr "Current language"
+
+msgid "Главная"
+msgstr "Main"
+
+msgid "Помощь"
+msgstr "Help"
+
+msgid "Вперед"
+msgstr "Forward"
+
+msgid "Назад"
+msgstr "Back"
+
+msgid "Выход"
+msgstr "Logout"

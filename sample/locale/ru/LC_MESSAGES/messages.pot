@@ -17,46 +17,65 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#
 msgid "start_hint_text"
 msgstr ""
 
-#
 msgid "Сообщите администратору идентификатор, который вы увидите"
 msgstr ""
 
-#
 msgid "Ваш идентификатор: "
 msgstr ""
 
-#
 msgid "Зарегистрироваться"
 msgstr ""
 
-#
 msgid "Авторизуйтесь или зарегистрируйтесь для начала работы с системой"
 msgstr ""
 
-#
 msgid "Введите код, полученный на почту"
 msgstr ""
 
-#
 msgid "Авторизоваться"
 msgstr ""
 
-#
 msgid "Введите пароль:"
 msgstr ""
 
-#
 msgid "Пароль не найден!"
 msgstr ""
 
-#
 msgid "Авторизуйтесь для начала работы с системой"
 msgstr ""
 
-#
 msgid "Это демо пример работы фреймворка, на базе которого можно создать телеграм бота."
+msgstr ""
+
+msgid "Вы вышли из системы"
+msgstr ""
+
+msgid "Введите логин:"
+msgstr ""
+
+msgid "Проверочный код отправлен на почту. Введите полученный код:"
+msgstr ""
+
+msgid "Ошибка отправки проверочного кода для"
+msgstr ""
+
+msgid "Текущий язык"
+msgstr ""
+
+msgid "Главная"
+msgstr ""
+
+msgid "Помощь"
+msgstr ""
+
+msgid "Вперед"
+msgstr ""
+
+msgid "Назад"
+msgstr ""
+
+msgid "Выход"
 msgstr ""
