@@ -84,7 +84,7 @@ class Telegram:
                                            reply_markup=self.prepare_markup(reply_markup))  
         
 
-    def delete_message_text(self, channel:str, message_id:str) -> int:
+    def delete_message(self, channel:str, message_id:str) -> int:
         if not self.status:
             return 0  
         self.bot.delete_message(chat_id=channel, message_id=message_id)

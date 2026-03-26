@@ -119,13 +119,13 @@ class Message():
             return 0    
         
 
-    def delete_message_text(self, channel:str, message_id:str) -> int:
+    def delete_message(self, channel:str, message_id:str) -> int:
         if not self.status:
             return 0  
 
         logging.info(f"channel={channel}: message_id={message_id}: Try to delete")   
         try:
-                self.driver.delete_message_text(channel=channel, message_id=message_id)
+                self.driver.delete_message(channel=channel, message_id=message_id)
                 return 1
         except Exception:
             logging.exception(f"channel=[{channel}]: message_id={message_id}: Messages delete error")

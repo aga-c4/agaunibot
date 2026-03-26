@@ -119,7 +119,6 @@ class BotController:
                 request.session.set({"lang": lang}) 
                 _ = Lang.get_lang_funct(lang)
                 mess_txt = _("Текущий язык:") + " " + lang
-                '''
                 all_markup_list = []
                 buttoms = []
                 for lng in langs:
@@ -130,8 +129,6 @@ class BotController:
                                         message_id=request.message.message_id, 
                                         new_text=mess_txt,
                                         reply_markup=self.message.get_blank_markup_dict(mklist=all_markup_list)) 
-                '''
-                self.message.delete_message_text(request.message.from_user["id"], message_id=request.message.message_id)                        
                 return {"redirect": {"route":["def_node", "settings", "lang"]}}
         else:
             lang = request.session.get("lang", app.default_lang)
@@ -145,4 +142,3 @@ class BotController:
             if len(buttoms)>0:
                 all_markup_list.append(buttoms)                
             self.message.send(request.chatid, text=mess_txt, reply_markup=self.message.get_blank_markup_dict(mklist=all_markup_list)) 
-
