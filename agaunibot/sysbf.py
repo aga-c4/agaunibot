@@ -1,12 +1,12 @@
 import logging
-import resource
+# import resource
 from importlib import import_module
 
 class SysBf:
 
     @staticmethod
     def get_max_memory_usage():
-        max_memory = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+        max_memory = 0 # resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
         return max_memory
 
     @staticmethod
