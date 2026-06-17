@@ -1,4 +1,5 @@
 import logging
+import datetime
 # import resource
 from importlib import import_module
 
@@ -40,8 +41,8 @@ class SysBf:
                     logging.warning(f"Error new [{class_name}] in {class_obj.__class__.__name__}")        
             except:
                 logging.warning(f"Error getattr [{class_name}]")        
-        except:
-            logging.warning(f"Error import_module [{module_name}]") 
+        except Exception as e:
+            logging.warning(f"Error import_module [{module_name}]:", e) 
         
         return None
     
@@ -98,3 +99,70 @@ class SysBf:
         elif type(source) is dict:
             return source.get(item, default)     
         return default    
+
+    @staticmethod    
+    def tzdt_fr_str(dt_str:str='', tz_str:str='') -> datetime:
+        "Сначала пробуем 3 топовых формата, потом более медленно распознаем все. Если не определилось, то отдаст начало эпохи Unix"
+        
+        # https://pythonist.ru/preobrazovanie-strok-v-datu-so-vremenem/?ysclid=m17h82ndn110307520
+        date_time_obj = datetime.datetime.fromtimestamp(0)
+        if dt_str!='':
+            try:
+                date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%dT%H:%M:%S.%f')
+            except:
+                try:
+                    date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S.%f')
+                except:
+                    try:
+                        date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%dT%H:%M:%S')
+                    except:
+                        try:
+                            date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H:%M:%S')
+                        except:
+                            try:
+                                date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%d %H')
+                            except:
+                                try:
+                                    date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m-%d')
+                                except:
+                                    try:
+                                        date_time_obj = datetime.datetime.strptime(dt_str, '%Y-%m')
+                                    except:
+                                        try:
+                                            date_time_obj = parse(dt_str)
+                                        except:
+                                            logging.error(f'SysBf:tzdt_fr_str: Date format error [{dt_str}] type:' + str(type(dt_str)))
+        return SysBf.tzdt(dt=date_time_obj, tz_str=tz_str)
+    
+    @staticmethod
+    def tzdt(dt:datetime, tz_str:str='') -> datetime:
+        if dt is None:
+            return None
+        if dt.tzinfo == tz_str:
+            return dt
+        if not dt.tzinfo is None:
+            return SysBf.dt_to_tz(dt, tz_str)
+        tzdt = dt
+        if tz_str!='':
+            try:
+                timezone = pytz.timezone(tz_str)
+                tzdt = timezone.localize(tzdt)
+            except:
+                logging.error(f'SysBf:tzdt: Timezone format error [{tz_str}] type:' + str(type(tz_str)) + ' time: ' + str(dt) + ' time_tipe:' + str(type(dt)))    
+
+        return tzdt
+
+    @staticmethod
+    def dt_to_tz(dt:datetime, tz_str:str='') -> datetime:
+        '''tz_str - пустая строка - возвращаем dt, notz - удаляем таймзону, оставляем текущее время'''
+        if dt is None:
+            return None
+        if dt.tzinfo == tz_str:
+            return dt
+        if tz_str=='notz':
+            return dt.replace(tzinfo=None)
+        elif tz_str!='':
+            timezone = pytz.timezone(tz_str)
+            return  dt.astimezone(timezone)  
+        return dt      
+    
